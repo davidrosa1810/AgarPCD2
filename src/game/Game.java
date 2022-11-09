@@ -17,43 +17,43 @@ public class Game extends Observable {
 	public static final double MAX_INITIAL_STRENGTH = 3;
 	public static final long MAX_WAITING_TIME_FOR_MOVE = 2000;
 	public static final long INITIAL_WAITING_TIME = 10000;
-	
+
 
 	protected Cell[][] board;
 
 	public Game() {
 		board = new Cell[Game.DIMX][Game.DIMY];
-	
+
 		for (int x = 0; x < Game.DIMX; x++) 
 			for (int y = 0; y < Game.DIMY; y++) 
 				board[x][y] = new Cell(new Coordinate(x, y),this);
 	}
-	
+
 	/** 
 	 * @param player 
 	 * @throws InterruptedException 
 	 */
 	public void addPlayerToGame(Player player) throws InterruptedException {
 		Cell initialPos=getRandomCell();
-		initialPos.setPlayer(player);
+		initialPos.addPlayerToGame(player);
 
-		
+
 		// To update GUI
 		notifyChange();
-		
+
 	}
 
 	public Cell getCell(Coordinate at) {
 		return board[at.x][at.y];
 	}
-	
+
 	public Cell getCell(Player p) {
-	    for(Cell[] c2: board) {
-		for(Cell c: c2) {
-		    if(c.getPlayer() != null && c.getPlayer().equals(p)) return c;
+		for(Cell[] c2: board) {
+			for(Cell c: c2) {
+				if(c.getPlayer() != null && c.getPlayer().equals(p)) return c;
+			}
 		}
-	    }
-	    return null;
+		return null;
 	}
 
 	/**	

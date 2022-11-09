@@ -11,6 +11,8 @@ import game.Player;
 
 import javax.swing.JFrame;
 
+import environment.Coordinate;
+
 public class GameGuiMain implements Observer {
 	private JFrame frame = new JFrame("pcd.io");
 	private BoardJComponent boardGui;
@@ -55,6 +57,22 @@ public class GameGuiMain implements Observer {
 		}
 		for(Thread t: automaticPlayers) {
 		    t.start();
+		}
+		while(true) {
+			try {
+				Thread.sleep(1000);
+				int playerCount = 0;
+				for(int x = 0; x < 30; x++) {
+					for(int y = 0; y < 30; y++) {
+						if(game.getCell(new Coordinate(x,y)).isOcupied()) playerCount++;
+					}
+				}
+				System.out.println("Player count: " + playerCount);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
 		}
 //		game.addPlayerToGame(new PhoneyHumanPlayer(1, game, (byte)3));
 //		game.addPlayerToGame(new PhoneyHumanPlayer(2, game, (byte)2));
