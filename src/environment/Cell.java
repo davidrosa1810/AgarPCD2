@@ -1,5 +1,8 @@
 package environment;
 
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 import game.Game;
 import game.Player;
 
@@ -7,6 +10,8 @@ public class Cell {
 	private Coordinate position;
 	private Game game;
 	private Player player=null;
+	
+	private Lock lock =new ReentrantLock ();
 
 	public Cell(Coordinate position,Game g) {
 		super();
@@ -32,38 +37,7 @@ public class Cell {
 		return player;
 	}
 
-	public synchronized void movePlayer(Direction d) {
-		Coordinate newPosition = getPlayer().getCurrentCell().getPosition().translate(d.getVector());
-		if(!newPosition.outOfBounds()) {
-			Cell newCell = game.getCell(newPosition);
-			if(newCell.isOcupied()) {	// new cell is ocupied
-				if(newCell.getPlayer().getCurrentStrength() < getPlayer().getCurrentStrength()) {
-					newCell.getPlayer().getThread().interrupt();
-					newCell.getPlayer().getCurrentCell().disoccupy();
-				}
-				else if(newCell.getPlayer().getCurrentStrength() > getPlayer().getCurrentStrength()) {
-					getPlayer().getThread().interrupt();
-					getPlayer().getCurrentCell().disoccupy();
-				}
-				else {
-					if(Math.random() < 0.5) {
-						newCell.getPlayer().getThread().interrupt();
-						newCell.getPlayer().getCurrentCell().disoccupy();
-					}
-					else {
-						getPlayer().getThread().interrupt();
-						getPlayer().getCurrentCell().disoccupy();
-					}
-				}
-			} else {
-				newCell.setPlayer(player);
-				disoccupy(); 
-			}
-		}
-		notifyAll();
-	}
-
-	public synchronized void setPlayer(Player player) {
+	public void setPlayer(Player player) {
 		this.player=player;
 	}
 

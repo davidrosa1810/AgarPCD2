@@ -80,10 +80,15 @@ public abstract class Player  {
 		return id;
 	}
 	
-	public static int generateInitialEnergy() {
+	public static byte generateInitialEnergy() {
 	    Double r = Math.random();
 	    if(r<0.33) return 1;
 	    else if(r>=0.33 && r<0.66) return 2;
 	    else return 3;
+	}
+	
+	public void addEnergy(byte energyAmount) {
+	    currentStrength += energyAmount;
+	    if(currentStrength > 10) currentStrength = 10;
 	}
 }

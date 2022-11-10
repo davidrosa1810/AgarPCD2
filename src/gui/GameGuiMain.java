@@ -49,7 +49,7 @@ public class GameGuiMain implements Observer {
 			e.printStackTrace();
 		}
 		for(int id = 0; id < Game.NUM_PLAYERS; id++) {
-		    AutomaticPlayer a = new AutomaticPlayer(id, game, (byte)Player.generateInitialEnergy());
+		    AutomaticPlayer a = new AutomaticPlayer(id, game, Player.generateInitialEnergy());
 		    Thread t = new Thread(a);
 		    automaticPlayers.add(t);
 		    a.setThread(t);
