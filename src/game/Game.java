@@ -57,47 +57,6 @@ public class Game extends Observable {
 	return null;
     }
 
-    public synchronized void movePlayer(Cell c, Direction d) {
-	//	    lock.lock();
-	//	System.out.println("entrei no movePlayer");
-	//	    try {
-	//		Thread.sleep(1000);
-	//	    } catch (InterruptedException e) {
-	//		// TODO Auto-generated catch block
-	//		e.printStackTrace();
-	//	    }
-	Coordinate newPosition = c.getPosition().translate(d.getVector());
-	if(!newPosition.outOfBounds()) {
-	    Cell newCell = getCell(newPosition);
-	    if(newCell.isOcupied()) {	// new cell is ocupied
-		if(newCell.getPlayer().getCurrentStrength() < c.getPlayer().getCurrentStrength()) {
-		    c.getPlayer().addEnergy(newCell.getPlayer().getCurrentStrength());
-		    newCell.getPlayer().getThread().interrupt();
-		}
-		else if(newCell.getPlayer().getCurrentStrength() > c.getPlayer().getCurrentStrength()) {
-		    newCell.getPlayer().addEnergy(c.getPlayer().getCurrentStrength());
-		    c.getPlayer().getThread().interrupt();
-		}
-		else {
-		    if(Math.random() < 0.5) {
-			c.getPlayer().addEnergy(newCell.getPlayer().getCurrentStrength());
-			newCell.getPlayer().getThread().interrupt();
-		    }
-		    else {
-			newCell.getPlayer().addEnergy(c.getPlayer().getCurrentStrength());
-			c.getPlayer().getThread().interrupt();
-		    }
-		}
-	    } else {
-		newCell.setPlayer(c.getPlayer());
-		c.disoccupy(); 
-	    }
-	}
-	notifyAll();
-	//	System.out.println("Acabou o moveplayr");
-    }
-
-
     /**	
      * Updates GUI. Should be called anytime the game state changes
      */

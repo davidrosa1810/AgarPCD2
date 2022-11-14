@@ -11,6 +11,7 @@ import environment.Cell;
  */
 public abstract class Player  {
 
+    
 
 	protected  Game game;
 
@@ -20,6 +21,8 @@ public abstract class Player  {
 	protected byte originalStrength;
 	
 	private Thread thread;
+	
+	public boolean gameStarted = false;
 
 	public Cell getCurrentCell() {
 		return game.getCell(this);
