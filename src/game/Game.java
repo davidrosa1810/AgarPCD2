@@ -1,11 +1,10 @@
 package game;
 
 
-import java.util.HashMap;
 import java.util.Observable;
+
 import environment.Cell;
 import environment.Coordinate;
-import environment.Direction;
 
 public class Game extends Observable {
 

@@ -84,10 +84,7 @@ public abstract class Player  {
 	}
 	
 	public static byte generateInitialEnergy() {
-	    Double r = Math.random();
-	    if(r<0.33) return 1;
-	    else if(r>=0.33 && r<0.66) return 2;
-	    else return 3;
+	    return (byte) (Math.random()*3+1);
 	}
 	
 	public void addEnergy(byte energyAmount) {

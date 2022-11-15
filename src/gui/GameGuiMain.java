@@ -4,14 +4,11 @@ import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 
-import game.AutomaticPlayer;
-import game.Game;
-import game.PhoneyHumanPlayer;
-import game.Player;
-
 import javax.swing.JFrame;
 
-import environment.Coordinate;
+import game.AutomaticPlayer;
+import game.Game;
+import game.Player;
 
 public class GameGuiMain implements Observer {
 	private JFrame frame = new JFrame("pcd.io");
@@ -41,13 +38,6 @@ public class GameGuiMain implements Observer {
 		
 		ArrayList<Thread> automaticPlayers = new ArrayList<>();
 
-		// Demo players, should be deleted
-		try {
-			Thread.sleep(3000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		for(int id = 0; id < Game.NUM_PLAYERS; id++) {
 		    AutomaticPlayer a = new AutomaticPlayer(id, game, Player.generateInitialEnergy());
 		    Thread t = new Thread(a);
@@ -78,6 +68,7 @@ public class GameGuiMain implements Observer {
 //		game.addPlayerToGame(new PhoneyHumanPlayer(2, game, (byte)2));
 //		game.addPlayerToGame(new PhoneyHumanPlayer(3, game, (byte)1));
 	}
+
 
 	@Override
 	public void update(Observable o, Object arg) {

@@ -1,6 +1,5 @@
 package game;
 
-import environment.Coordinate;
 import environment.Direction;
 
 public class AutomaticPlayer extends Player implements Runnable {
