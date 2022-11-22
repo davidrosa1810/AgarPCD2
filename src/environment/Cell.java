@@ -1,8 +1,10 @@
 package environment;
 
+import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import game.AutomaticPlayer;
 import game.Game;
 import game.Player;
 
@@ -12,6 +14,10 @@ public class Cell {
     private Player player=null;
 
     private Lock lock = new ReentrantLock ();
+    private Lock lock2 = new ReentrantLock();
+    
+    private Condition cellIsOcupied = lock2.newCondition();
+    private Condition cellIsEmpty = lock2.newCondition();
 
     public Cell(Coordinate position,Game g) {
 	super();
@@ -27,11 +33,22 @@ public class Cell {
 	return player!=null;
     }
 
-    public synchronized void disoccupy() {
+    public void disoccupy() throws InterruptedException {
 	lock.lock();
-	this.player=null;
-	notifyAll();
-	lock.unlock();
+	lock2.lock();
+	try {
+	    while(!isOcupied()) {
+		cellIsOcupied.await();
+	    }
+	    this.player=null;
+	    cellIsEmpty.signalAll();
+	} finally {
+	    lock.unlock();
+	    lock2.unlock();
+	}
+	
+	//notifyAll();
+	
     }
 
 
@@ -44,60 +61,99 @@ public class Cell {
     }
 
     public synchronized void movePlayer(Direction d) {
-	//	    lock.lock();
-	//	System.out.println("entrei no movePlayer");
-	//	    try {
-	//		Thread.sleep(1000);
-	//	    } catch (InterruptedException e) {
-	//		// TODO Auto-generated catch block
-	//		e.printStackTrace();
-	//	    }
+
 	Coordinate newPosition = getPosition().translate(d.getVector());
 	if(!newPosition.outOfBounds()) {
 	    Cell newCell = game.getCell(newPosition);
 	    newCell.lock.lock();
 	    if(newCell.isOcupied()) {	// new cell is ocupied
-		if(newCell.getPlayer().getCurrentStrength() < getPlayer().getCurrentStrength()) {
-		    getPlayer().addEnergy(newCell.getPlayer().getCurrentStrength());
-		    newCell.getPlayer().getThread().interrupt();
-		}
-		else if(newCell.getPlayer().getCurrentStrength() > getPlayer().getCurrentStrength()) {
-		    newCell.getPlayer().addEnergy(getPlayer().getCurrentStrength());
-		    getPlayer().getThread().interrupt();
+		if(!newCell.getPlayer().isActive()) {}
+		else if(newCell.getPlayer().getCurrentStrength() == 0) {
+		    if(getPlayer() instanceof AutomaticPlayer) {
+			//bloquear
+		    }
 		}
 		else {
-		    if(Math.random() < 0.5) {
-			getPlayer().addEnergy(newCell.getPlayer().getCurrentStrength());
-			newCell.getPlayer().getThread().interrupt();
+		    if(newCell.getPlayer().getCurrentStrength() < getPlayer().getCurrentStrength()) {
+			fight(getPlayer(), newCell.getPlayer());
+		    }
+		    else if(newCell.getPlayer().getCurrentStrength() > getPlayer().getCurrentStrength()) {
+			fight(newCell.getPlayer(), getPlayer());
 		    }
 		    else {
-			newCell.getPlayer().addEnergy(getPlayer().getCurrentStrength());
-			getPlayer().getThread().interrupt();
+			if(Math.random() < 0.5) {
+			    fight(getPlayer(), newCell.getPlayer());
+			}
+			else {
+			    fight(newCell.getPlayer(), getPlayer());
+			}
 		    }
 		}
+
 	    } else {
 		newCell.setPlayer(getPlayer());
-		disoccupy(); 
+		try {
+		    disoccupy();
+		} catch (InterruptedException e) {
+		    // TODO Auto-generated catch block
+		    e.printStackTrace();
+		} 
 	    }
 	    newCell.lock.unlock();
 	}
 
-	notifyAll();
+	//notifyAll();
 	//	System.out.println("Acabou o moveplayr");
     }
 
+    public synchronized void fight(Player strong, Player weak) {
+	strong.addEnergy(weak.getCurrentStrength());
+	weak.setEnergyToZero();
+	weak.getThread().interrupt();
+	if(strong.getCurrentStrength() == 10) {
+	    strong.checkEndGame.countDown();
+	    strong.getThread().interrupt();
+	}
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     // Should not be used like this in the initial state: cell might be occupied, must coordinate this operation
-    public synchronized void addPlayerToGame(Player player) throws InterruptedException {
+    public void addPlayerToGame(Player player) throws InterruptedException {
+	lock2.lock();
 	while(isOcupied()) {
 	    System.out.println("Célula já ocupada; posição: " + position + ", jogador1: " + getPlayer().getIdentification() + ", jogador2: " + player.getIdentification());
 	    System.out.println("A esperar");
 	    player.gameStarted = true;
-	    wait();
+	    cellIsEmpty.await();
 	    System.out.println("Acabou a espera");
 	}
 
 	this.player = player;
+	cellIsOcupied.signalAll();
 	game.notifyChange();
+	lock2.unlock();
 
 
 
