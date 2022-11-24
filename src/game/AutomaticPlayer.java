@@ -22,10 +22,10 @@ public class AutomaticPlayer extends Player implements Runnable {
 	    if(!gameStarted) Thread.sleep(2000);
 	    else Thread.sleep(game.REFRESH_INTERVAL);
 	    while(true) {
-		Direction d = Direction.values()[(int)(Math.random()*Direction.values().length)];
+		Direction d = Direction.getRandomDirection();
 		getCurrentCell().movePlayer(d);
 		game.notifyChange();
-		Thread.sleep(originalStrength*game.REFRESH_INTERVAL/3);
+		Thread.sleep(originalStrength*game.REFRESH_INTERVAL);
 	    }
 	} catch (InterruptedException e1) {
 	    if(getCurrentStrength() == 0) {
