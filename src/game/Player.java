@@ -11,7 +11,6 @@ import environment.Cell;
  */
 public abstract class Player  {
 
-    
 
 	protected  Game game;
 
@@ -21,24 +20,17 @@ public abstract class Player  {
 	protected byte originalStrength;
 	
 	private Thread thread;
-	
-	public boolean gameStarted = false;
-	
-	public CountDownLatch checkEndGame;
-	
-	private boolean isActive = true;
 
 	public Cell getCurrentCell() {
 		return game.getCell(this);
 	}
 
-	public Player(int id, Game game, byte strength, CountDownLatch checkEndGame) {
+	public Player(int id, Game game, byte strength) {
 		super();
 		this.id = id;
 		this.game=game;
 		currentStrength=strength;
 		originalStrength=strength;
-		this.checkEndGame = checkEndGame;
 	}
 	
 	public void setThread(Thread t) {
@@ -89,26 +81,14 @@ public abstract class Player  {
 	}
 	
 	public static byte generateInitialEnergy() {
-	    return (byte) (Math.random()*3+1);
+	    Double r = Math.random();
+	    if(r<0.33) return 1;
+	    else if(r>=0.33 && r<0.66) return 2;
+	    else return 3;
 	}
 	
 	public void addEnergy(byte energyAmount) {
 	    currentStrength += energyAmount;
-	    if(currentStrength >= 10) {
-		currentStrength = 10;
-		setInactive();
-	    }
-	}
-	
-	public void setEnergyToZero() {
-	    currentStrength = 0;
-	}
-	
-	public void setInactive() {
-	    this.isActive = false;
-	}
-	
-	public boolean isActive() {
-	    return isActive;
+	    if(currentStrength > 10) currentStrength = 10;
 	}
 }

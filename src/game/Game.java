@@ -1,17 +1,18 @@
 package game;
 
 
+import java.util.HashMap;
 import java.util.Observable;
-
 import environment.Cell;
 import environment.Coordinate;
+import environment.Direction;
 
 public class Game extends Observable {
 
     public static final int DIMY = 30;
     public static final int DIMX = 30;
-    public static final int NUM_PLAYERS = 150;
-    public static final int NUM_FINISHED_PLAYERS_TO_END_GAME=3;
+    public static final int NUM_PLAYERS = 90;
+    private static final int NUM_FINISHED_PLAYERS_TO_END_GAME=3;
 
     public static final long REFRESH_INTERVAL = 400;
     public static final double MAX_INITIAL_STRENGTH = 3;
@@ -56,6 +57,47 @@ public class Game extends Observable {
 	return null;
     }
 
+    public synchronized void movePlayer(Cell c, Direction d) {
+	//	    lock.lock();
+	//	System.out.println("entrei no movePlayer");
+	//	    try {
+	//		Thread.sleep(1000);
+	//	    } catch (InterruptedException e) {
+	//		// TODO Auto-generated catch block
+	//		e.printStackTrace();
+	//	    }
+	Coordinate newPosition = c.getPosition().translate(d.getVector());
+	if(!newPosition.outOfBounds()) {
+	    Cell newCell = getCell(newPosition);
+	    if(newCell.isOcupied()) {	// new cell is ocupied
+		if(newCell.getPlayer().getCurrentStrength() < c.getPlayer().getCurrentStrength()) {
+		    c.getPlayer().addEnergy(newCell.getPlayer().getCurrentStrength());
+		    newCell.getPlayer().getThread().interrupt();
+		}
+		else if(newCell.getPlayer().getCurrentStrength() > c.getPlayer().getCurrentStrength()) {
+		    newCell.getPlayer().addEnergy(c.getPlayer().getCurrentStrength());
+		    c.getPlayer().getThread().interrupt();
+		}
+		else {
+		    if(Math.random() < 0.5) {
+			c.getPlayer().addEnergy(newCell.getPlayer().getCurrentStrength());
+			newCell.getPlayer().getThread().interrupt();
+		    }
+		    else {
+			newCell.getPlayer().addEnergy(c.getPlayer().getCurrentStrength());
+			c.getPlayer().getThread().interrupt();
+		    }
+		}
+	    } else {
+		newCell.setPlayer(c.getPlayer());
+		c.disoccupy(); 
+	    }
+	}
+	notifyAll();
+	//	System.out.println("Acabou o moveplayr");
+    }
+
+
     /**	
      * Updates GUI. Should be called anytime the game state changes
      */
@@ -68,8 +110,4 @@ public class Game extends Observable {
 	Cell newCell=getCell(new Coordinate((int)(Math.random()*Game.DIMX),(int)(Math.random()*Game.DIMY)));
 	return newCell; 
     }
-
-
-
-    
 }
