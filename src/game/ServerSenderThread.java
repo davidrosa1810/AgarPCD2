@@ -30,8 +30,8 @@ public class ServerSenderThread extends Thread{
     public void run() {
 	while(true) {
 	    try {
-		Thread.sleep(Game.REFRESH_INTERVAL);
 		out.writeObject(new DataUnit(guiMain.getBoard(),id));
+		Thread.sleep(Game.REFRESH_INTERVAL);
 	    } catch (InterruptedException e) {
 		// TODO Auto-generated catch block
 		e.printStackTrace();

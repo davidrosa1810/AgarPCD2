@@ -34,13 +34,14 @@ public class SenderThread extends Thread{
 
     @Override
     public void run() {
-	if(id == -1)
+	if(id == -1) {
 	    try {
 		wait();
 	    } catch (InterruptedException e) {
 		// TODO Auto-generated catch block
 		e.printStackTrace();
 	    }
+	}
 	while(true) {
 	    BoardJComponent board = (BoardJComponent) frame.getComponent(0);
 	    Direction d = board.getLastPressedDirection();

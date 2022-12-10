@@ -116,7 +116,7 @@ public class GameGuiMain implements Observer {
     }
 
     public static void main(String[] args) {
-	GameGuiMain game = new GameGuiMain();
+	GameGuiMain game = GameGuiMain.getInstance();
 	game.init();
     }
 

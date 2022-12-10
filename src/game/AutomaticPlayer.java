@@ -30,6 +30,9 @@ public class AutomaticPlayer extends Player implements Runnable {
 	} catch (InterruptedException e1) {
 	    if(getCurrentStrength() == 0) {
 		game.notifyChange();
+		for(Player p: getCurrentCell().getBlockedPlayers()) {
+		    p.getThread().interrupt();
+		}
 	    }
 	}	
     }

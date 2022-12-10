@@ -1,5 +1,7 @@
 package environment;
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -20,6 +22,8 @@ public class Cell {
 
     private Condition cellIsOcupied = lock2.newCondition();
     private Condition cellIsEmpty = lock2.newCondition();
+    
+    private HashSet<Player> blockedPlayers = new HashSet<Player>();
 
     public Cell(Coordinate position,Game g) {
 	super();
@@ -72,7 +76,7 @@ public class Cell {
 		if(newCell.getPlayer().getCurrentStrength() == 0) { // bloqueamento
 		    if(getPlayer() instanceof AutomaticPlayer) {
 			try {
-			    ThreadAwakener a = new ThreadAwakener(this, getPlayer());
+			    ThreadAwakener a = new ThreadAwakener(this);
 			    a.start();
 			    wait();
 			    movePlayer(Direction.getRandomDirection());
@@ -104,7 +108,11 @@ public class Cell {
 		    }
 		}
 
-	    } else {
+	    } 
+	    else if(newCell.isOcupied() && !newCell.getPlayer().isActive()) {
+		movePlayer(Direction.getRandomDirection());
+	    }
+	    else {
 		newCell.setPlayer(getPlayer());
 		try {
 		    disoccupy();
@@ -131,43 +139,35 @@ public class Cell {
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    public HashSet<Player> getBlockedPlayers(){
+	return blockedPlayers;
+    }
 
 
     // Should not be used like this in the initial state: cell might be occupied, must coordinate this operation
-    public void addPlayerToGame(Player player) throws InterruptedException {
+    public void addPlayerToGame(Player player) {
 	lock2.lock();
-	while(isOcupied()) {
-	    System.out.println("Célula já ocupada; posição: " + position + ", jogador1: " + getPlayer().getIdentification() + ", jogador2: " + player.getIdentification());
-	    System.out.println("A esperar");
-	    player.gameStarted = true;
-	    cellIsEmpty.await();
-	    System.out.println("Acabou a espera");
+
+
+	try {
+	    while(isOcupied()) {
+		blockedPlayers.add(player);
+		System.out.println("Célula já ocupada; posição: " + position + ", jogador1: " + getPlayer().getIdentification() + ", jogador2: " + player.getIdentification());
+		System.out.println("A esperar");
+		player.gameStarted = true;
+		cellIsEmpty.await();
+		System.out.println("Acabou a espera");
+	    }
+	    blockedPlayers.remove(player);
+	    this.player = player;
+	    cellIsOcupied.signalAll();
+	    game.notifyChange();
+	    lock2.unlock();
+	} catch (InterruptedException e) {
+	    System.out.println("Estava bloquado na celula: " + this.getPosition());
+	    game.addPlayerToGame(player);
 	}
 
-	this.player = player;
-	cellIsOcupied.signalAll();
-	game.notifyChange();
-	lock2.unlock();
 
 
 

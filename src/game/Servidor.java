@@ -16,7 +16,7 @@ public class Servidor {
     
     private ArrayList<HumanPlayer> players = new ArrayList<HumanPlayer>();
     
-    private Game game;
+    public Game game;
     
     public Servidor(Game game) {
 	this.game = game;
@@ -33,18 +33,28 @@ public class Servidor {
     public void startServing() throws IOException {
 	ServerSocket ss = new ServerSocket(PORTO);
 	try {
-
+	    ss.setSoTimeout(1000);
 	    while(true){
 		int id = Game.NUM_PLAYERS;
 		Socket socket = ss.accept();
-		players.add(new HumanPlayer(id,game));
+		HumanPlayer player = new HumanPlayer(id,game);
+		players.add(player);
+		game.addPlayerToGame(player);
 		new ServerSenderThread(socket,id).start();
+		new ServerReceiverThread(socket,this).start();
 		id++;
 	    }			
 	} catch (IOException e) {
 	    
 	} finally {
 	}
+    }
+    
+    public HumanPlayer getPlayerById(int id) {
+	for(HumanPlayer p: players) {
+	    if(p.getIdentification() == id) return p;
+	}
+	return null;
     }
 
 }

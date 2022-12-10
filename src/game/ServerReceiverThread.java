@@ -18,10 +18,13 @@ public class ServerReceiverThread extends Thread{
 
     private Socket socket;
     private BufferedReader in;
+    
+    private Servidor serv;
 
 
-    public ServerReceiverThread(Socket socket) throws IOException {
+    public ServerReceiverThread(Socket socket, Servidor serv) throws IOException {
 	this.socket = socket;
+	this.serv = serv;
 	in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
     }
 
@@ -35,7 +38,15 @@ public class ServerReceiverThread extends Thread{
 		String idString = elements[1];
 		int id = Integer.parseInt(idString);
 		Direction d = Direction.valueOf(direction);
-		
+		Player p = serv.getPlayerById(id);
+		p.getCurrentCell().movePlayer(d);
+		serv.game.notifyChange();
+		try {
+		    Thread.sleep(Game.REFRESH_INTERVAL);
+		} catch (InterruptedException e) {
+		    // TODO Auto-generated catch block
+		    e.printStackTrace();
+		}
 	    } catch (IOException e) {
 		// TODO Auto-generated catch block
 		e.printStackTrace();
