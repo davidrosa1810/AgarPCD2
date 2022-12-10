@@ -6,32 +6,32 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.io.Serializable;
 import java.net.InetAddress;
 import java.net.Socket;
 
-public class HumanPlayer extends Player {
-    
+public class HumanPlayer extends Player implements Serializable{
+
     private BufferedReader in;
     private PrintWriter out;
     private Socket socket;
 
-    public HumanPlayer(int id, Game game, CountDownLatch checkEndGame) {
-	super(id, game, (byte) 5, checkEndGame);
+    public HumanPlayer(int id, Game game) {
+	super(id, game, (byte) 5);
     }
-    
+
     public void runClient() {
 	try {
 	    connectToServer();
-	    sendMessages();
 	} catch (IOException e) {// ERRO...
 	} finally {//a fechar...
 	    try {
 		socket.close();
-	    } catch (IOException e) {//... 
+	    } catch (IOException e) {//...
 	    }
 	}
     }
-    
+
     void connectToServer() throws IOException {
 	InetAddress endereco = InetAddress.getByName(null);
 	System.out.println("Endereco:" + endereco);
@@ -43,19 +43,7 @@ public class HumanPlayer extends Player {
 		new OutputStreamWriter(socket.getOutputStream())),
 		true);
     }
-    
-    void sendMessages() throws IOException {
-	for (int i = 0; i < 10; i++) {
-	    out.println("Ola " + i);
-	    String str = in.readLine();
-	    System.out.println(str);
-	    try {
-		Thread.sleep(3000);
-	    } catch (InterruptedException e) {//...  
-	    }
-	}
-	out.println("FIM");
-    }
+
 
     @Override
     public boolean isHumanPlayer() {

@@ -33,9 +33,13 @@ public class Game extends Observable {
 	 * @param player 
 	 * @throws InterruptedException 
 	 */
-	public void addPlayerToGame(Player player) throws InterruptedException {
+	public void addPlayerToGame(Player player) {
 		Cell initialPos=getRandomCell();
-		initialPos.addPlayerToGame(player);
+		try {
+		    initialPos.addPlayerToGame(player);
+		} catch (InterruptedException e) {
+		    addPlayerToGame(player);
+		}
 
 
 		// To update GUI
@@ -54,6 +58,15 @@ public class Game extends Observable {
 			}
 		}
 		return null;
+	}
+	
+	public Cell getCell(int id) {
+	    for(Cell[] c2: board) {
+		for(Cell c: c2) {
+		    if(c.getPlayer() != null && c.getPlayer().getIdentification() == id) return c;
+		}
+	    }
+	    return null;
 	}
 
 	/**	

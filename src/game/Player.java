@@ -24,21 +24,18 @@ public abstract class Player  {
 	
 	public boolean gameStarted = false;
 	
-	public CountDownLatch checkEndGame;
-	
 	private boolean isActive = true;
 
 	public Cell getCurrentCell() {
 		return game.getCell(this);
 	}
 
-	public Player(int id, Game game, byte strength, CountDownLatch checkEndGame) {
+	public Player(int id, Game game, byte strength) {
 		super();
 		this.id = id;
 		this.game=game;
 		currentStrength=strength;
 		originalStrength=strength;
-		this.checkEndGame = checkEndGame;
 	}
 	
 	public void setThread(Thread t) {

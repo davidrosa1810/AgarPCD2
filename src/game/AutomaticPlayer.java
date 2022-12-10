@@ -5,8 +5,8 @@ import environment.Direction;
 public class AutomaticPlayer extends Player implements Runnable {
 
 
-    public AutomaticPlayer(int id, Game game, byte strength, CountDownLatch checkEndGame) {
-	super(id, game, strength, checkEndGame);
+    public AutomaticPlayer(int id, Game game, byte strength) {
+	super(id, game, strength);
     }
 
     @Override

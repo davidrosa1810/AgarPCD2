@@ -8,6 +8,7 @@ import game.AutomaticPlayer;
 import game.Game;
 import game.Player;
 import game.ThreadAwakener;
+import gui.GameGuiMain;
 
 public class Cell {
     private Coordinate position;
@@ -71,7 +72,7 @@ public class Cell {
 		if(newCell.getPlayer().getCurrentStrength() == 0) { // bloqueamento
 		    if(getPlayer() instanceof AutomaticPlayer) {
 			try {
-			    ThreadAwakener a = new ThreadAwakener(this);
+			    ThreadAwakener a = new ThreadAwakener(this, getPlayer());
 			    a.start();
 			    wait();
 			    movePlayer(Direction.getRandomDirection());
@@ -124,7 +125,7 @@ public class Cell {
 	weak.setEnergyToZero();
 	weak.getThread().interrupt();
 	if(strong.getCurrentStrength() == 10) {
-	    strong.checkEndGame.countDown();
+	    GameGuiMain.getInstance().checkEndGame.countDown();
 	    strong.getThread().interrupt();
 	}
     }
