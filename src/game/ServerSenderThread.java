@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
+import environment.Cell;
 import environment.Direction;
 import gui.GameGuiMain;
 
@@ -19,26 +20,29 @@ public class ServerSenderThread extends Thread{
     private Game game;
     
     private int id;
+    
+    private Player player;
 
 
-    public ServerSenderThread(Socket socket, int id, Game game) throws IOException {
+    public ServerSenderThread(Socket socket, int id, Game game, Player player) throws IOException {
 	this.socket = socket;
 	out = new ObjectOutputStream(socket.getOutputStream());
 	guiMain = GameGuiMain.getInstance();
 	this.id = id;
 	this.game = game;
+	this.player = player;
     }
     
     @Override
     public void run() {
-	while(true) {
+
+    	while(true) {
 	    try {
-		out.writeObject(new DataUnit(game.getBoard(),id));
-		for (int x = 0; x < Game.DIMX; x++) 
-			for (int y = 0; y < Game.DIMY; y++)
-				if(game.getBoard()[x][y].getPlayer() != null)
-				System.out.print( id + "2 ");
-		System.out.println();
+
+	    DataUnit d = new DataUnit(game.getBoard(),id, guiMain.gameHasEnded, player.getCurrentStrength() == 0);
+	    out.writeObject(d);
+	    out.reset();
+		
 		Thread.sleep(Game.REFRESH_INTERVAL);
 	    } catch (InterruptedException e) {
 		System.out.println("SAIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII");
@@ -47,6 +51,8 @@ public class ServerSenderThread extends Thread{
 	    	e.printStackTrace();
 	    	System.out.println("SAIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII");
 	    }
+	    
+
 	    
 	}
     }

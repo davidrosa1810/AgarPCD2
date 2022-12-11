@@ -8,6 +8,7 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import game.AutomaticPlayer;
+import game.HumanPlayer;
 import game.Game;
 import game.Player;
 import game.ThreadAwakener;

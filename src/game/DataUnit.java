@@ -9,12 +9,16 @@ import gui.BoardJComponent;
 
 public class DataUnit implements Serializable{
     
-    private final Cell[][] matrix;
-    private final int playerID;
+    private Cell[][] matrix;
+    private int playerID;
+    private Boolean gameIsOver;
+    private Boolean playerIsDead;
     
-    public DataUnit(Cell[][] board,int playerID) {
-	this.matrix = board;
+    public DataUnit(Cell[][] matrix,int playerID, Boolean gameIsOver, Boolean playerIsDead) {
+	this.matrix = matrix;
 	this.playerID = playerID;
+	this.gameIsOver = gameIsOver;
+	this.playerIsDead = playerIsDead;
     }
 
     public Cell[][] getMatrix() {
@@ -24,5 +28,13 @@ public class DataUnit implements Serializable{
     public int getPlayerID() {
         return playerID;
     }
+
+	public Boolean getGameIsOver() {
+		return gameIsOver;
+	}
+
+	public Boolean getPlayerIsDead() {
+		return playerIsDead;
+	}
     
 }

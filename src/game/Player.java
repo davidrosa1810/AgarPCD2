@@ -15,7 +15,7 @@ public abstract class Player  implements Serializable{
 
     
 
-	protected transient Game game;
+	protected  transient Game game;
 
 	private int id;
 
