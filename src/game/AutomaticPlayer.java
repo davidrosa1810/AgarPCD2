@@ -2,8 +2,8 @@ package game;
 
 import environment.Direction;
 import gui.GameGuiMain;
-
-public class AutomaticPlayer extends Player implements Runnable {
+import java.io.Serializable;
+public class AutomaticPlayer extends Player implements Runnable, Serializable{
 
 
     public AutomaticPlayer(int id, Game game, byte strength) {

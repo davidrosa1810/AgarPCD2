@@ -74,6 +74,7 @@ public class GameGuiMain implements Observer {
 	try {
 	    checkEndGame.await();
 	    endGame();
+	    
 	} catch (InterruptedException e) {
 	    // TODO Auto-generated catch block
 	    e.printStackTrace();

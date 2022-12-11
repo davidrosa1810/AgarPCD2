@@ -11,6 +11,7 @@ import javax.swing.JComponent;
 import javax.swing.JFrame;
 
 import environment.Cell;
+import environment.Coordinate;
 import gui.BoardJComponent;
 
 public class ReceiverThread extends Thread{
@@ -27,46 +28,58 @@ public class ReceiverThread extends Thread{
     public ReceiverThread(Socket socket, Cliente cliente) throws IOException {
 	this.socket = socket;
 	this.cliente = cliente;
-	this.frame = cliente.getFrame();
+	//this.frame = cliente.getFrame();
 	in = new ObjectInputStream (socket.getInputStream());
     }
 
     @Override
     public synchronized void run() {
-	Game game = new Game();
+    	Game game = new Game();
 	try {
 	    DataUnit dadosIniciais = (DataUnit) in.readObject();
-	    int id = dadosIniciais.getPlayerID();
+	   int id = dadosIniciais.getPlayerID();
 	    cliente.setID(id);
 	    Cell[][] matrix = dadosIniciais.getMatrix();
-	    game.setMatrix(matrix);
+		for (int x = 0; x < Game.DIMX; x++) 
+			for (int y = 0; y < Game.DIMY; y++)
+				if(matrix[x][y].getPlayer() != null)
+				System.out.print("1 ");
+		
 	    boardgui = new BoardJComponent(game,false);
-	    
+	   
 
-	    
+	    frame = new JFrame("cliente.io");
 	    
 	    frame.add(boardgui);
 	    frame.setSize(800,800);
 	    frame.setLocation(0, 150);
 	    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	    
-	    
-	    game.notifyChange();
-	    boardgui.repaint();
-
 	    frame.setVisible(true);
+	    
+	    game.setMatrix(matrix);
+	 //   game1.notifyChange();
+	   // boardgui.repaint();
+
+	    
 	    notifyAll();
-	} catch (ClassNotFoundException | IOException e1) {
+	} catch (IOException | ClassNotFoundException e1) {
 	    // TODO Auto-generated catch block
 	    e1.printStackTrace();
-	}
+	} 
 	while(true) {
 	    try {
 		DataUnit data = (DataUnit) in.readObject();
-		frame.removeAll();
 		Cell[][] matrix = data.getMatrix();
+
+		for (int x = 0; x < Game.DIMX; x++) 
+			for (int y = 0; y < Game.DIMY; y++)
+				if(matrix[x][y].getPlayer() != null)
+				System.out.print("1 ");
+		System.out.println();
 		game.setMatrix(matrix);
 		boardgui.repaint();
+		game.notifyChange();
 		//frame.add(board);
 	    } catch (ClassNotFoundException | IOException e) {
 		// TODO Auto-generated catch block

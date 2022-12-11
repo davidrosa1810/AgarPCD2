@@ -26,7 +26,7 @@ public class SenderThread extends Thread{
 
     public SenderThread(Socket socket, Cliente cliente) throws IOException {
 	this.socket = socket;
-	this.frame = cliente.getFrame();
+	//this.frame = cliente.getFrame();
 	this.cliente = cliente;
 	id = cliente.getID();
 	out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())),true);

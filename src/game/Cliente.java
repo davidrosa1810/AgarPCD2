@@ -19,7 +19,7 @@ public class Cliente {
     private ReceiverThread receiverThread;
     private SenderThread senderThread;
 
-    private JFrame frame;
+    //private JFrame frame;
 
     private BufferedReader in;
     private PrintWriter out;
@@ -32,7 +32,7 @@ public class Cliente {
 	InetAddress address = InetAddress.getByName(endereco);
 	socket = new Socket(address, porto);
 
-	frame = new JFrame("pcd.io");
+	//frame = new JFrame("pcd.io");
 	
 	
     }
@@ -66,10 +66,6 @@ public class Cliente {
 	    socket.close();
 	} catch (IOException e) {//... 
 	}
-    }
-    
-    public JFrame getFrame() {
-	return frame;
     }
     
     public int getID() {

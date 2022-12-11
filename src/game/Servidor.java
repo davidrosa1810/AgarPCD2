@@ -34,8 +34,9 @@ public class Servidor {
 	ServerSocket ss = new ServerSocket(PORTO);
 	try {
 	    ss.setSoTimeout(10000);
+	    int id = Game.NUM_PLAYERS;
 	    while(true){
-		int id = Game.NUM_PLAYERS;
+		
 		Socket socket = ss.accept();
 		HumanPlayer player = new HumanPlayer(id,game);
 		players.add(player);
