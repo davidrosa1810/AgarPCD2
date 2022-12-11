@@ -1,5 +1,6 @@
 package environment;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.concurrent.locks.Condition;
@@ -12,18 +13,18 @@ import game.Player;
 import game.ThreadAwakener;
 import gui.GameGuiMain;
 
-public class Cell {
+public class Cell implements Serializable{
     private Coordinate position;
-    private Game game;
+    private transient Game game;
     private Player player=null;
 
-    private Lock lock = new ReentrantLock ();
-    private Lock lock2 = new ReentrantLock();
+    private transient Lock lock = new ReentrantLock ();
+    private transient Lock lock2 = new ReentrantLock();
 
-    private Condition cellIsOcupied = lock2.newCondition();
-    private Condition cellIsEmpty = lock2.newCondition();
+    private transient Condition cellIsOcupied = lock2.newCondition();
+    private transient Condition cellIsEmpty = lock2.newCondition();
 
-    private HashSet<Player> blockedPlayers = new HashSet<Player>();
+    private transient HashSet<Player> blockedPlayers = new HashSet<Player>();
 
     public Cell(Coordinate position,Game g) {
 	super();

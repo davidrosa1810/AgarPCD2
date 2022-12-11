@@ -10,6 +10,7 @@ import java.net.Socket;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
 
+import environment.Cell;
 import gui.BoardJComponent;
 
 public class ReceiverThread extends Thread{
@@ -21,6 +22,8 @@ public class ReceiverThread extends Thread{
 
     private Cliente cliente;
 
+    private BoardJComponent boardgui;
+
     public ReceiverThread(Socket socket, Cliente cliente) throws IOException {
 	this.socket = socket;
 	this.cliente = cliente;
@@ -30,10 +33,28 @@ public class ReceiverThread extends Thread{
 
     @Override
     public synchronized void run() {
+	Game game = new Game();
 	try {
 	    DataUnit dadosIniciais = (DataUnit) in.readObject();
 	    int id = dadosIniciais.getPlayerID();
 	    cliente.setID(id);
+	    Cell[][] matrix = dadosIniciais.getMatrix();
+	    game.setMatrix(matrix);
+	    boardgui = new BoardJComponent(game,false);
+	    
+
+	    
+	    
+	    frame.add(boardgui);
+	    frame.setSize(800,800);
+	    frame.setLocation(0, 150);
+	    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	    
+	    
+	    game.notifyChange();
+	    boardgui.repaint();
+
+	    frame.setVisible(true);
 	    notifyAll();
 	} catch (ClassNotFoundException | IOException e1) {
 	    // TODO Auto-generated catch block
@@ -42,9 +63,11 @@ public class ReceiverThread extends Thread{
 	while(true) {
 	    try {
 		DataUnit data = (DataUnit) in.readObject();
-		JComponent board = data.getBoard();
 		frame.removeAll();
-		frame.add(board);
+		Cell[][] matrix = data.getMatrix();
+		game.setMatrix(matrix);
+		boardgui.repaint();
+		//frame.add(board);
 	    } catch (ClassNotFoundException | IOException e) {
 		// TODO Auto-generated catch block
 		e.printStackTrace();

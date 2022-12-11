@@ -4,20 +4,21 @@ import java.io.Serializable;
 
 import javax.swing.JComponent;
 
+import environment.Cell;
 import gui.BoardJComponent;
 
 public class DataUnit implements Serializable{
     
-    private final JComponent board;
+    private final Cell[][] matrix;
     private final int playerID;
     
-    public DataUnit(JComponent board,int playerID) {
-	this.board = board;
+    public DataUnit(Cell[][] board,int playerID) {
+	this.matrix = board;
 	this.playerID = playerID;
     }
 
-    public JComponent getBoard() {
-        return board;
+    public Cell[][] getMatrix() {
+        return matrix;
     }
 
     public int getPlayerID() {

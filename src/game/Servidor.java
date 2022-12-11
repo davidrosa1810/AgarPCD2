@@ -40,7 +40,7 @@ public class Servidor {
 		HumanPlayer player = new HumanPlayer(id,game);
 		players.add(player);
 		game.addPlayerToGame(player);
-		new ServerSenderThread(socket,id).start();
+		new ServerSenderThread(socket,id,game).start();
 		new ServerReceiverThread(socket,this).start();
 		id++;
 	    }			

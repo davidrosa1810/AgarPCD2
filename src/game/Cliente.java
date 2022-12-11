@@ -26,18 +26,15 @@ public class Cliente {
     private Socket socket;
     
     private int id = -1;
+    
 
     public Cliente(String endereco, int porto, int up, int down, int left, int right) throws IOException {
 	InetAddress address = InetAddress.getByName(endereco);
 	socket = new Socket(address, porto);
 
 	frame = new JFrame("pcd.io");
-
-	frame.setSize(800,800);
-	frame.setLocation(0, 150);
-	frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	
-	frame.setVisible(true);
+	
     }
 
     public static void main(String[] args) {

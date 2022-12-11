@@ -16,21 +16,24 @@ public class ServerSenderThread extends Thread{
     
     private GameGuiMain guiMain;
     
+    private Game game;
+    
     private int id;
 
 
-    public ServerSenderThread(Socket socket, int id) throws IOException {
+    public ServerSenderThread(Socket socket, int id, Game game) throws IOException {
 	this.socket = socket;
 	out = new ObjectOutputStream(socket.getOutputStream());
 	guiMain = GameGuiMain.getInstance();
 	this.id = id;
+	this.game = game;
     }
     
     @Override
     public void run() {
 	while(true) {
 	    try {
-		out.writeObject(new DataUnit(guiMain.getBoard(),id));
+		out.writeObject(new DataUnit(game.getBoard(),id));
 		Thread.sleep(Game.REFRESH_INTERVAL);
 	    } catch (InterruptedException e) {
 		

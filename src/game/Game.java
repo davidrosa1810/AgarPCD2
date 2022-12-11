@@ -20,14 +20,14 @@ public class Game extends Observable {
     
 
 
-    protected Cell[][] board;
+    protected Cell[][] matrix;
 
     public Game() {
-	board = new Cell[Game.DIMX][Game.DIMY];
+	matrix = new Cell[Game.DIMX][Game.DIMY];
 
 	for (int x = 0; x < Game.DIMX; x++) 
 	    for (int y = 0; y < Game.DIMY; y++)
-		board[x][y] = new Cell(new Coordinate(x, y),this);
+		matrix[x][y] = new Cell(new Coordinate(x, y),this);
     }
 
     /** 
@@ -45,11 +45,11 @@ public class Game extends Observable {
     }
 
     public Cell getCell(Coordinate at) {
-	return board[at.x][at.y];
+	return matrix[at.x][at.y];
     }
 
     public synchronized Cell getCell(Player p) {
-	for(Cell[] c2: board) {
+	for(Cell[] c2: matrix) {
 	    for(Cell c: c2) {
 		if(c.getPlayer() != null && c.getPlayer().equals(p)) return c;
 	    }
@@ -58,7 +58,7 @@ public class Game extends Observable {
     }
 
     public Cell getCell(int id) {
-	for(Cell[] c2: board) {
+	for(Cell[] c2: matrix) {
 	    for(Cell c: c2) {
 		if(c.getPlayer() != null && c.getPlayer().getIdentification() == id) return c;
 	    }
@@ -78,7 +78,14 @@ public class Game extends Observable {
 	Cell newCell=getCell(new Coordinate((int)(Math.random()*Game.DIMX),(int)(Math.random()*Game.DIMY)));
 	return newCell; 
     }
-
+    
+    public Cell[][] getBoard(){
+	return matrix;
+    }
+    
+    public void setMatrix(Cell[][] matrix) {
+	this.matrix = matrix;
+    }
 
 
 

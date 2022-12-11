@@ -2,6 +2,8 @@ package game;
 
 
 
+import java.io.Serializable;
+
 import environment.Cell;
 
 /**
@@ -9,18 +11,18 @@ import environment.Cell;
  * @author luismota
  *
  */
-public abstract class Player  {
+public abstract class Player  implements Serializable{
 
     
 
-	protected  Game game;
+	protected transient Game game;
 
 	private int id;
 
 	private byte currentStrength;
 	protected byte originalStrength;
 	
-	private Thread thread;
+	private transient Thread thread;
 	
 	public boolean gameStarted = false;
 	
