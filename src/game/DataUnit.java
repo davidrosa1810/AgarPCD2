@@ -2,39 +2,36 @@ package game;
 
 import java.io.Serializable;
 
-import javax.swing.JComponent;
-
 import environment.Cell;
-import gui.BoardJComponent;
 
 public class DataUnit implements Serializable{
-    
+
     private Cell[][] matrix;
     private int playerID;
     private Boolean gameIsOver;
-    private Boolean playerIsDead;
-    
-    public DataUnit(Cell[][] matrix,int playerID, Boolean gameIsOver, Boolean playerIsDead) {
+    private Boolean playerIsInactive;
+
+    public DataUnit(Cell[][] matrix,int playerID, Boolean gameIsOver, Boolean playerIsInactive) {
 	this.matrix = matrix;
 	this.playerID = playerID;
 	this.gameIsOver = gameIsOver;
-	this.playerIsDead = playerIsDead;
+	this.playerIsInactive = playerIsInactive;
     }
 
     public Cell[][] getMatrix() {
-        return matrix;
+	return matrix;
     }
 
     public int getPlayerID() {
-        return playerID;
+	return playerID;
     }
 
-	public Boolean getGameIsOver() {
-		return gameIsOver;
-	}
+    public Boolean getGameIsOver() {
+	return gameIsOver;
+    }
 
-	public Boolean getPlayerIsDead() {
-		return playerIsDead;
-	}
-    
+    public Boolean getPlayerIsInactive() {
+	return playerIsInactive;
+    }
+
 }

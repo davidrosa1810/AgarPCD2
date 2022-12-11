@@ -1,7 +1,5 @@
 package game;
 
-import environment.Cell;
-
 public class ThreadAwakener extends Thread {
 
     private Object obj;
@@ -19,7 +17,6 @@ public class ThreadAwakener extends Thread {
 	    }
 
 	} catch (InterruptedException e) {
-	    // TODO Auto-generated catch block
 	    e.printStackTrace();
 	}
     }

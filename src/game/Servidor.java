@@ -1,11 +1,8 @@
 package game;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 
 
@@ -18,20 +15,14 @@ public class Servidor {
     
     public Game game;
     
+    private ServerSocket ss;
+    
     public Servidor(Game game) {
 	this.game = game;
     }
-    
-//    public static void main(String[] args) {
-//	try {
-//	    new Servidor().startServing();
-//	} catch (IOException e) {
-//	    // ...
-//	}
-//    }
 
     public void startServing() throws IOException {
-	ServerSocket ss = new ServerSocket(PORTO);
+	ss = new ServerSocket(PORTO);
 	try {
 	    ss.setSoTimeout(10000);
 	    int id = Game.NUM_PLAYERS;
@@ -41,8 +32,10 @@ public class Servidor {
 		HumanPlayer player = new HumanPlayer(id,game);
 		players.add(player);
 		game.addPlayerToGame(player);
-		new ServerSenderThread(socket,id,game,player).start();
-		new ServerReceiverThread(socket,this).start();
+		Thread receiver = new ServerReceiverThread(socket,this);
+		receiver.start();
+		new ServerSenderThread(socket,id,game,player,receiver).start();
+		
 		id++;
 	    }			
 	} catch (IOException e) {
@@ -56,6 +49,10 @@ public class Servidor {
 	    if(p.getIdentification() == id) return p;
 	}
 	return null;
+    }
+    
+    public void closeServerSocket() throws IOException {
+	ss.close();
     }
 
 }

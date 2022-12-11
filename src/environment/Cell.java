@@ -1,14 +1,12 @@
 package environment;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 import game.AutomaticPlayer;
-import game.HumanPlayer;
 import game.Game;
 import game.Player;
 import game.ThreadAwakener;
@@ -55,8 +53,6 @@ public class Cell implements Serializable{
 	    lock2.unlock();
 	}
 
-	//notifyAll();
-
     }
 
 
@@ -74,8 +70,12 @@ public class Cell implements Serializable{
 	if(!newPosition.outOfBounds()) {
 	    Cell newCell = game.getCell(newPosition);
 	    newCell.lock.lock();
-	    if(newCell.isOcupied() && newCell.getPlayer().isActive()) {	// new cell is ocupied
-		if(newCell.getPlayer().getCurrentStrength() == 0) { // bloqueamento
+
+	    if(newCell.isOcupied()) {
+		if(newCell.getPlayer().isActive()) {
+		    measureStrength(newCell.getPlayer(),getPlayer());
+		}
+		else {
 		    if(getPlayer() instanceof AutomaticPlayer) {
 			try {
 			    ThreadAwakener a = new ThreadAwakener(this);
@@ -85,34 +85,8 @@ public class Cell implements Serializable{
 			} catch (InterruptedException e) {
 			    getPlayer().getThread().interrupt();
 			}
-			//						try {
-			//							wait();
-			//						} catch (InterruptedException e) {
-			//							// TODO Auto-generated catch block
-			//							e.printStackTrace();
-			//						}
 		    }
 		}
-		else {
-		    if(newCell.getPlayer().getCurrentStrength() < getPlayer().getCurrentStrength()) {
-			fight(getPlayer(), newCell.getPlayer());
-		    }
-		    else if(newCell.getPlayer().getCurrentStrength() > getPlayer().getCurrentStrength()) {
-			fight(newCell.getPlayer(), getPlayer());
-		    }
-		    else {
-			if(Math.random() < 0.5) {
-			    fight(getPlayer(), newCell.getPlayer());
-			}
-			else {
-			    fight(newCell.getPlayer(), getPlayer());
-			}
-		    }
-		}
-
-	    } 
-	    else if(newCell.isOcupied() && !newCell.getPlayer().isActive()) {
-		movePlayer(Direction.getRandomDirection());
 	    }
 	    else {
 		newCell.setPlayer(getPlayer());
@@ -123,20 +97,37 @@ public class Cell implements Serializable{
 		    e.printStackTrace();
 		} 
 	    }
+
 	    newCell.lock.unlock();
+
 	}
 
-	//notifyAll();
-	//	System.out.println("Acabou o moveplayr");
     }
 
-    public synchronized void fight(Player strong, Player weak) {
+    public synchronized void measureStrength(Player p1, Player p2) {
+	if(p1.getCurrentStrength() < p2.getCurrentStrength()) {
+	    fight(p2, p1);
+	}
+	else if(p1.getCurrentStrength() > p2.getCurrentStrength()) {
+	    fight(p1, p2);
+	}
+	else {
+	    if(Math.random() < 0.5) {
+		fight(p2, p1);
+	    }
+	    else {
+		fight(p1, p2);
+	    }
+	}
+    }
+
+    public synchronized void fight(Player strong, Player weak) {	
 	strong.addEnergy(weak.getCurrentStrength());
 	weak.setEnergyToZero();
-	weak.getThread().interrupt();
+	if(weak instanceof AutomaticPlayer) weak.getThread().interrupt();
 	if(strong.getCurrentStrength() == 10) {
 	    GameGuiMain.getInstance().checkEndGame.countDown();
-	    strong.getThread().interrupt();
+	    if(strong instanceof AutomaticPlayer) strong.getThread().interrupt();
 	}
     }
 
@@ -158,7 +149,6 @@ public class Cell implements Serializable{
     }
 
 
-    // Should not be used like this in the initial state: cell might be occupied, must coordinate this operation
     public void addPlayerToGame(Player player) {
 	lock2.lock();
 
@@ -172,10 +162,8 @@ public class Cell implements Serializable{
 		while(isOcupied()) {
 		    addBlockedPlayer(player);
 		    System.out.println("Célula já ocupada; posição: " + position + ", jogador1: " + getPlayer().getIdentification() + ", jogador2: " + player.getIdentification());
-		    System.out.println("A esperar");
 		    player.gameStarted = true;
 		    cellIsEmpty.await();
-		    System.out.println("Acabou a espera");
 		}
 		removeBlockedPlayer(player);
 		this.player = player;
@@ -184,7 +172,6 @@ public class Cell implements Serializable{
 		lock2.unlock();
 	    } catch (InterruptedException e) {
 		if(!GameGuiMain.getInstance().gameHasEnded) {
-		    System.out.println("Estava bloquado na celula: " + this.getPosition());
 		    someoneDied(player);
 		}
 	    }
@@ -193,16 +180,12 @@ public class Cell implements Serializable{
 
     public synchronized void someoneDied(Player player) {
 	try {
-	    //	    ThreadAwakener a = new ThreadAwakener(player);
-	    //	    a.start();
-	    //	    player.wait();
-	    Thread.sleep(2000);
-
+	    ThreadAwakener a = new ThreadAwakener(this);
+	    a.start();
+	    wait();
 	} catch (InterruptedException e) {
-	    
 	}
 	if(!GameGuiMain.getInstance().gameHasEnded) {
-	    System.out.println("Joao");
 	    game.addPlayerToGame(player);
 	}
     }

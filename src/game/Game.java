@@ -1,7 +1,6 @@
 package game;
 
 
-import java.io.Serializable;
 import java.util.Observable;
 
 import environment.Cell;
@@ -39,8 +38,6 @@ public class Game extends Observable {
 	Cell initialPos=getRandomCell();
 	initialPos.addPlayerToGame(player);
 
-
-	// To update GUI
 	notifyChange();
 
     }
@@ -67,9 +64,6 @@ public class Game extends Observable {
 	return null;
     }
 
-    /**	
-     * Updates GUI. Should be called anytime the game state changes
-     */
     public void notifyChange() {
 	setChanged();
 	notifyObservers();

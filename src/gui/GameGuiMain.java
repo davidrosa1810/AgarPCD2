@@ -1,7 +1,6 @@
 package gui;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -20,6 +19,8 @@ public class GameGuiMain implements Observer {
     public CountDownLatch checkEndGame;
     Thread[] automaticPlayers = new Thread[Game.NUM_PLAYERS];
     
+    private Servidor servidor;
+    
     public boolean gameHasEnded = false;
     
     private static GameGuiMain INSTANCE = null;
@@ -35,7 +36,7 @@ public class GameGuiMain implements Observer {
 	super();
 	game = new Game();
 	game.addObserver(this);
-	checkEndGame = new CountDownLatch(game.NUM_FINISHED_PLAYERS_TO_END_GAME);
+	checkEndGame = new CountDownLatch(Game.NUM_FINISHED_PLAYERS_TO_END_GAME);
 
 	buildGui();
 
@@ -54,10 +55,9 @@ public class GameGuiMain implements Observer {
 	frame.setVisible(true);
 	
 	try {
-	    Servidor servidor = new Servidor(game);
+	    servidor = new Servidor(game);
 	    servidor.startServing();
 	} catch (IOException e1) {
-	    // TODO Auto-generated catch block
 	    e1.printStackTrace();
 	}
 
@@ -66,7 +66,6 @@ public class GameGuiMain implements Observer {
 	    Thread t = new Thread(a);
 	    automaticPlayers[id] = t;
 	    a.setThread(t);
-	    //game.addPlayerToGame(a);
 	}
 	for(Thread t: automaticPlayers) {
 	    t.start();
@@ -76,29 +75,8 @@ public class GameGuiMain implements Observer {
 	    endGame();
 	    
 	} catch (InterruptedException e) {
-	    // TODO Auto-generated catch block
 	    e.printStackTrace();
 	}
-	
-	//		while(true) {
-	//			try {
-	//				Thread.sleep(1000);
-	//				int playerCount = 0;
-	//				for(int x = 0; x < 30; x++) {
-	//					for(int y = 0; y < 30; y++) {
-	//						if(game.getCell(new Coordinate(x,y)).isOcupied()) playerCount++;
-	//					}
-	//				}
-	//				System.out.println("Player count: " + playerCount);
-	//			} catch (InterruptedException e) {
-	//				// TODO Auto-generated catch block
-	//				e.printStackTrace();
-	//			}
-	//			
-	//		}
-	//		game.addPlayerToGame(new PhoneyHumanPlayer(1, game, (byte)3));
-	//		game.addPlayerToGame(new PhoneyHumanPlayer(2, game, (byte)2));
-	//		game.addPlayerToGame(new PhoneyHumanPlayer(3, game, (byte)1));
     }
 
     public synchronized void endGame() {
@@ -107,6 +85,11 @@ public class GameGuiMain implements Observer {
 	}
 	System.out.println("Jogo terminado");
 	gameHasEnded = true;
+	try {
+	    servidor.closeServerSocket();
+	} catch (IOException e) {
+	    e.printStackTrace();
+	}
     }
     
     public synchronized BoardJComponent getBoard() {

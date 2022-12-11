@@ -3,7 +3,7 @@ package game;
 import environment.Direction;
 import gui.GameGuiMain;
 import java.io.Serializable;
-public class AutomaticPlayer extends Player implements Runnable, Serializable{
+public class AutomaticPlayer extends Player implements Runnable{
 
 
     public AutomaticPlayer(int id, Game game, byte strength) {

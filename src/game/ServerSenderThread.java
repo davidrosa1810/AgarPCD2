@@ -1,59 +1,48 @@
 package game;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 
-import environment.Cell;
-import environment.Direction;
 import gui.GameGuiMain;
 
 public class ServerSenderThread extends Thread{
-    
-    private Socket socket;
     private ObjectOutputStream out;
-    
     private GameGuiMain guiMain;
-    
     private Game game;
-    
     private int id;
-    
     private Player player;
+    private Thread serverReceiver;
 
-
-    public ServerSenderThread(Socket socket, int id, Game game, Player player) throws IOException {
-	this.socket = socket;
+    public ServerSenderThread(Socket socket, int id, Game game, Player player, Thread serverReceiver) throws IOException {
 	out = new ObjectOutputStream(socket.getOutputStream());
 	guiMain = GameGuiMain.getInstance();
 	this.id = id;
 	this.game = game;
 	this.player = player;
+	this.serverReceiver = serverReceiver;
     }
-    
+
     @Override
     public void run() {
 
-    	while(true) {
+	while(true) {
 	    try {
+		boolean gameHasEnded = guiMain.gameHasEnded;
+		DataUnit d = new DataUnit(game.getBoard(),id, gameHasEnded, !player.isActive());
+		out.writeObject(d);
+		out.reset();
 
-	    DataUnit d = new DataUnit(game.getBoard(),id, guiMain.gameHasEnded, player.getCurrentStrength() == 0);
-	    out.writeObject(d);
-	    out.reset();
-		
+		if(gameHasEnded) {
+		    serverReceiver.interrupt();
+		    break;
+		}
 		Thread.sleep(Game.REFRESH_INTERVAL);
 	    } catch (InterruptedException e) {
-		System.out.println("SAIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII");
-	    e.printStackTrace();
+		e.printStackTrace();
 	    } catch (IOException e) {
-	    	e.printStackTrace();
-	    	System.out.println("SAIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIIII");
+		e.printStackTrace();
 	    }
-	    
-
-	    
 	}
     }
 
