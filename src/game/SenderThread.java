@@ -33,7 +33,7 @@ public class SenderThread extends Thread{
     }
 
     @Override
-    public void run() {
+    public synchronized void run() {
 	if(id == -1) {
 	    try {
 		wait();
@@ -46,6 +46,7 @@ public class SenderThread extends Thread{
 	    BoardJComponent board = (BoardJComponent) frame.getComponent(0);
 	    Direction d = board.getLastPressedDirection();
 	    board.clearLastPressedDirection();
+	    System.out.println(id);
 	    out.println(d.toString() + "," + id);
 	}
     }

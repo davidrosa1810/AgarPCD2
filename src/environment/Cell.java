@@ -22,7 +22,7 @@ public class Cell {
 
     private Condition cellIsOcupied = lock2.newCondition();
     private Condition cellIsEmpty = lock2.newCondition();
-    
+
     private HashSet<Player> blockedPlayers = new HashSet<Player>();
 
     public Cell(Coordinate position,Game g) {
@@ -139,8 +139,20 @@ public class Cell {
     }
 
 
-    public HashSet<Player> getBlockedPlayers(){
+    public synchronized HashSet<Player> getBlockedPlayers(){
 	return blockedPlayers;
+    }
+
+    public synchronized void removeAllBlockedPlayers(){
+	blockedPlayers.removeAll(blockedPlayers);
+    }
+
+    public synchronized void removeBlockedPlayer(Player p) {
+	blockedPlayers.remove(p);
+    }
+
+    public synchronized void addBlockedPlayer(Player p) {
+	blockedPlayers.add(p);
     }
 
 
@@ -148,104 +160,49 @@ public class Cell {
     public void addPlayerToGame(Player player) {
 	lock2.lock();
 
+	if(isOcupied() && getPlayer().getCurrentStrength() == 0) {
+	    someoneDied(player);
+	}
+	else {
 
-	try {
-	    while(isOcupied()) {
-		blockedPlayers.add(player);
-		System.out.println("Célula já ocupada; posição: " + position + ", jogador1: " + getPlayer().getIdentification() + ", jogador2: " + player.getIdentification());
-		System.out.println("A esperar");
-		player.gameStarted = true;
-		cellIsEmpty.await();
-		System.out.println("Acabou a espera");
+
+	    try {
+		while(isOcupied()) {
+		    addBlockedPlayer(player);
+		    System.out.println("Célula já ocupada; posição: " + position + ", jogador1: " + getPlayer().getIdentification() + ", jogador2: " + player.getIdentification());
+		    System.out.println("A esperar");
+		    player.gameStarted = true;
+		    cellIsEmpty.await();
+		    System.out.println("Acabou a espera");
+		}
+		removeBlockedPlayer(player);
+		this.player = player;
+		cellIsOcupied.signalAll();
+		game.notifyChange();
+		lock2.unlock();
+	    } catch (InterruptedException e) {
+		if(!GameGuiMain.getInstance().gameHasEnded) {
+		    System.out.println("Estava bloquado na celula: " + this.getPosition());
+		    someoneDied(player);
+		}
 	    }
-	    blockedPlayers.remove(player);
-	    this.player = player;
-	    cellIsOcupied.signalAll();
-	    game.notifyChange();
-	    lock2.unlock();
+	}
+    }
+
+    public synchronized void someoneDied(Player player) {
+	try {
+	    //	    ThreadAwakener a = new ThreadAwakener(player);
+	    //	    a.start();
+	    //	    player.wait();
+	    Thread.sleep(2000);
+
 	} catch (InterruptedException e) {
-	    System.out.println("Estava bloquado na celula: " + this.getPosition());
+	    
+	}
+	if(!GameGuiMain.getInstance().gameHasEnded) {
+	    System.out.println("Joao");
 	    game.addPlayerToGame(player);
 	}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-	//	if(!isOcupied() && player.getCurrentCell() != null) {
-	//	    Cell c = player.getCurrentCell();
-	//	    this.player = player;
-	//	    c.setPlayer(null);
-	//	    return;
-	//	}
-	//	if(player == null) {
-	//	    this.player=null;
-	//	    notifyAll();
-	//	    return;
-	//	}
-	//	while(isOcupied() && player.getCurrentCell() == null) {
-	//	    System.out.println("ciclo while");
-	//	    System.out.println("Célula já ocupada; posição: " + position + ", jogador1: " + getPlayer().getIdentification() + ", jogador2: " + player.getIdentification());
-	//	    wait();
-	//	    System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-	//	}
-	//	if(isOcupied() && player.getCurrentCell() != null) {
-	//	    System.out.println("interação");
-	//	    System.out.println("Célula já ocupada; posição: " + position + ", jogador1: " + getPlayer().getIdentification() + ", jogador2: " + player.getIdentification());
-	//	    if(player.getCurrentStrength() < getPlayer().getCurrentStrength()) {
-	//		System.out.println("abababagdsagsa");
-	//		player.getCurrentCell().setPlayer(null);
-	//		player.getThread().interrupt();
-	//		return;
-	//	    }
-	//	    else if(player.getCurrentStrength() > getPlayer().getCurrentStrength()) {
-	//		getPlayer().getCurrentCell().setPlayer(null);
-	//		getPlayer().getThread().interrupt();
-	//		this.player = player;
-	//		return;
-	//	    }
-	//	    else {
-	//		if(Math.random() < 0.5) {
-	//		    player.getCurrentCell().setPlayer(null);
-	//		    player.getThread().interrupt();
-	//		    return;
-	//		}
-	//		else {
-	//		    getPlayer().getCurrentCell().setPlayer(null);
-	//		    getPlayer().getThread().interrupt();
-	//		    this.player = player;
-	//		    return;
-	//		}
-	//	    }
-	//	}
-	//	if(!isOcupied() && player.getCurrentCell() == null) {
-	//	    this.player = player;
-	//	    return;
-	//	}
-	//	System.out.println("posiçao_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa: " + position);
-	//	this.player = player;
-	//	notifyAll();	    
     }
 
 

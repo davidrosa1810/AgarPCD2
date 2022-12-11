@@ -7,6 +7,7 @@ import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.net.Socket;
 
+import javax.swing.JComponent;
 import javax.swing.JFrame;
 
 import gui.BoardJComponent;
@@ -28,7 +29,7 @@ public class ReceiverThread extends Thread{
     }
 
     @Override
-    public void run() {
+    public synchronized void run() {
 	try {
 	    DataUnit dadosIniciais = (DataUnit) in.readObject();
 	    int id = dadosIniciais.getPlayerID();
@@ -41,7 +42,7 @@ public class ReceiverThread extends Thread{
 	while(true) {
 	    try {
 		DataUnit data = (DataUnit) in.readObject();
-		BoardJComponent board = data.getBoard();
+		JComponent board = data.getBoard();
 		frame.removeAll();
 		frame.add(board);
 	    } catch (ClassNotFoundException | IOException e) {

@@ -4,18 +4,18 @@ import environment.Cell;
 
 public class ThreadAwakener extends Thread {
 
-    private Cell c;
+    private Object obj;
 
-    public ThreadAwakener(Cell c) {
-	this.c = c;
+    public ThreadAwakener(Object obj) {
+	this.obj = obj;
     }
 
     @Override
     public synchronized void run() {
 	try {
 	    Thread.sleep(2000);
-	    synchronized(c) {
-		c.notify();
+	    synchronized(obj) {
+		obj.notify();
 	    }
 
 	} catch (InterruptedException e) {

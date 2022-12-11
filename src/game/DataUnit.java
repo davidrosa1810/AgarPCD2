@@ -1,18 +1,22 @@
 package game;
 
+import java.io.Serializable;
+
+import javax.swing.JComponent;
+
 import gui.BoardJComponent;
 
-public class DataUnit {
+public class DataUnit implements Serializable{
     
-    private BoardJComponent board;
-    private int playerID;
+    private final JComponent board;
+    private final int playerID;
     
-    public DataUnit(BoardJComponent board,int playerID) {
+    public DataUnit(JComponent board,int playerID) {
 	this.board = board;
 	this.playerID = playerID;
     }
 
-    public BoardJComponent getBoard() {
+    public JComponent getBoard() {
         return board;
     }
 

@@ -20,6 +20,8 @@ public class GameGuiMain implements Observer {
     public CountDownLatch checkEndGame;
     Thread[] automaticPlayers = new Thread[Game.NUM_PLAYERS];
     
+    public boolean gameHasEnded = false;
+    
     private static GameGuiMain INSTANCE = null;
     
     public static GameGuiMain getInstance() {
@@ -103,9 +105,10 @@ public class GameGuiMain implements Observer {
 	    player.interrupt();
 	}
 	System.out.println("Jogo terminado");
+	gameHasEnded = true;
     }
     
-    public BoardJComponent getBoard() {
+    public synchronized BoardJComponent getBoard() {
 	return boardGui;
     }
 

@@ -14,6 +14,8 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.io.Serializable;
+
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 
@@ -96,6 +98,7 @@ public class BoardJComponent extends JComponent implements KeyListener {
 
 	@Override
 	public void keyPressed(KeyEvent e) {
+	    System.out.println("Foi premida uma tecla: " + e.getKeyCode());
 		if(alternativeKeys) {
 			switch(e.getKeyCode()){	
 			case  KeyEvent.VK_A:

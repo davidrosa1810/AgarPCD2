@@ -33,7 +33,7 @@ public class Servidor {
     public void startServing() throws IOException {
 	ServerSocket ss = new ServerSocket(PORTO);
 	try {
-	    ss.setSoTimeout(1000);
+	    ss.setSoTimeout(10000);
 	    while(true){
 		int id = Game.NUM_PLAYERS;
 		Socket socket = ss.accept();

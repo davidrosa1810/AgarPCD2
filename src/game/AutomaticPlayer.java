@@ -1,6 +1,7 @@
 package game;
 
 import environment.Direction;
+import gui.GameGuiMain;
 
 public class AutomaticPlayer extends Player implements Runnable {
 
@@ -21,11 +22,13 @@ public class AutomaticPlayer extends Player implements Runnable {
 	    game.addPlayerToGame(this);
 	    if(!gameStarted) Thread.sleep(2000);
 	    else Thread.sleep(game.REFRESH_INTERVAL);
-	    while(true) {
-		Direction d = Direction.getRandomDirection();
-		getCurrentCell().movePlayer(d);
-		game.notifyChange();
-		Thread.sleep(originalStrength*game.REFRESH_INTERVAL);
+	    if(!GameGuiMain.getInstance().gameHasEnded) {
+		while(true) {
+		    Direction d = Direction.getRandomDirection();
+		    getCurrentCell().movePlayer(d);
+		    game.notifyChange();
+		    Thread.sleep(originalStrength*game.REFRESH_INTERVAL);
+		}
 	    }
 	} catch (InterruptedException e1) {
 	    if(getCurrentStrength() == 0) {
@@ -33,6 +36,7 @@ public class AutomaticPlayer extends Player implements Runnable {
 		for(Player p: getCurrentCell().getBlockedPlayers()) {
 		    p.getThread().interrupt();
 		}
+		getCurrentCell().removeAllBlockedPlayers();
 	    }
 	}	
     }
