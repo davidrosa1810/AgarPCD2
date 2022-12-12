@@ -93,15 +93,11 @@ public class Cell implements Serializable{
 		try {
 		    disoccupy();
 		} catch (InterruptedException e) {
-		    // TODO Auto-generated catch block
 		    e.printStackTrace();
 		} 
 	    }
-
 	    newCell.lock.unlock();
-
 	}
-
     }
 
     public synchronized void measureStrength(Player p1, Player p2) {

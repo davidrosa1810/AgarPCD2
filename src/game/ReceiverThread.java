@@ -35,7 +35,7 @@ public class ReceiverThread extends Thread{
 			cliente.setID(id);
 			Cell[][] matrix = dadosIniciais.getMatrix();
 
-			boardgui = new BoardJComponent(game,false);
+			boardgui = new BoardJComponent(game,cliente.getAlternativeKeys());
 			cliente.setBoard(boardgui);
 			game.setMatrix(matrix);
 

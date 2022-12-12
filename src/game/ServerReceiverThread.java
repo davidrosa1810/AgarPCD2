@@ -6,9 +6,10 @@ import java.io.InputStreamReader;
 import java.net.Socket;
 
 import environment.Direction;
+import gui.GameGuiMain;
 
 public class ServerReceiverThread extends Thread{
-    
+
     private BufferedReader in;
     private Servidor serv;
 
@@ -24,14 +25,16 @@ public class ServerReceiverThread extends Thread{
 	    String line;
 	    try {
 		line = in.readLine();
-		String[] elements = line.split(",");
-		String direction = elements[0];
-		String idString = elements[1];
-		int id = Integer.parseInt(idString);
-		Direction d = Direction.valueOf(direction);
-		Player p = serv.getPlayerById(id);
-		p.getCurrentCell().movePlayer(d);
-		serv.game.notifyChange();
+		if(!GameGuiMain.getInstance().gameHasEnded) {
+		    String[] elements = line.split(",");
+		    String direction = elements[0];
+		    String idString = elements[1];
+		    int id = Integer.parseInt(idString);
+		    Direction d = Direction.valueOf(direction);
+		    Player p = serv.getPlayerById(id);
+		    p.getCurrentCell().movePlayer(d);
+		    serv.game.notifyChange();
+		}
 	    } catch (IOException e) {
 		break;
 	    }
